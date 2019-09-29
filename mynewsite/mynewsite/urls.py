@@ -16,12 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from mysite.views import about, listing, disp_detail, index
+from django.conf.urls import url
+from mysite import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('about/', about),
     path('list/', listing),
     path('list/<str:sku>/', disp_detail),
-    path('', index)
+    path('', index),
+    url(r'^ajax_add/', views.ajax_add),
+    url(r'^findresult/', views.findresult),
+
 ]
 
