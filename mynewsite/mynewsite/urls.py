@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from mysite.views import about, listing, disp_detail, index
 from django.conf.urls import url
-from mysite import views
+from mysite import views, view2
 
 
 urlpatterns = [
@@ -29,6 +29,6 @@ urlpatterns = [
     url(r'^ajax_add/', views.ajax_add),
     url(r'^findresult/', views.findresult),
     path('delete/', views.delete),
-
+    path('delete2/', view2.delete2),
 ]
 

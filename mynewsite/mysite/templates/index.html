@@ -149,7 +149,7 @@
 
     $("#deleteHaulBtn").on("click", function () {
         $.ajax({
-          url:"/delete/",
+          url:"/delete2/",
           type:"POST",
           <!--dataType:'json',-->
           data:{"id":$("#i1").val()},
@@ -249,7 +249,8 @@
             }, {
                 field: 'username',
                 title: '姓名',
-                sortable: true
+                sortable: true,
+                edit:{type:'text' }
             }, {
                 field: 'Mobile',
                 title: '手机',
