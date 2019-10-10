@@ -19,6 +19,7 @@ from mysite.views import about, listing, disp_detail, index
 from django.conf.urls import url
 from mysite import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('about/', about),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('', index),
     url(r'^ajax_add/', views.ajax_add),
     url(r'^findresult/', views.findresult),
+    path('delete/', views.delete),
 
 ]
 

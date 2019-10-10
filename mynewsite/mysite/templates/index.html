@@ -14,58 +14,329 @@
 </ul>
 <hr>
 <em>今日佳句：{{ quote }}</em>
-
+<br>
 <input type="text" id="i1">+
 <input type="text" id="i2">=
 <input type="text" id="i3">
-<input type="button" value="AJAX提交" id="b1">
-<table class="gridtable" align="center" id="pstable" border="1">
+</br>
+</br>
+
+<input type="button" value="查询" id="search" class="btn btn-info">
+<input type="button" value="添加" id="add" class="btn btn-info">
+<input type="button" value="修改" id="edit" class="btn btn-info">
+<input type="button" value="删除" id="delete" class="btn btn-info">
+</br>
+</br>
+<table class="table table-striped table-bordered table-hover" align="center" id="dataTable" border="1">
         <thead>
             <tr>
-                <th  align="center" style="color:red" >姓名</th>
-                <th  align="center" style="color:red" >编号</th>
+                <th>&nbsp;</th>
+                <th>姓名</th>
+                <th>编号</th>
+                <th>操作</th>
             </tr>
         </thead>
 
         <tbody>
         {% for item in items %}
         <tr>
-            <td>{{item.name}}</td>
             <td>{{item.id}}</td>
+            <td>{{item.username}}</td>
+            <td>{{item.id}}</td>
+            <td>修改</td>
         </tr>
         {% endfor %}
         </tbody>
 
     </table>
+
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新增</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_departmentname">部门名称</label>
+                        <input type="text" name="txt_departmentname" class="form-control" id="txt_departmentname" placeholder="部门名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_parentdepartment">上级部门</label>
+                        <input type="text" name="txt_parentdepartment" class="form-control" id="txt_parentdepartment" placeholder="上级部门">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_departmentlevel">部门级别</label>
+                        <input type="text" name="txt_departmentlevel" class="form-control" id="txt_departmentlevel" placeholder="部门级别">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_statu">描述</label>
+                        <input type="text" name="txt_statu" class="form-control" id="txt_statu" placeholder="状态">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 模态框   信息删除确认 -->
+    <div class="modal fade" id="delcfmOverhaul">
+        <div class="modal-dialog">
+            <div class="modal-content message_align">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">提示</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- 隐藏需要删除的id -->
+                    <input type="hidden" id="deleteHaulId" />
+                    <p>您确认要删除该条信息吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                        data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary"
+                        id="deleteHaulBtn">确认</button>
+                </div>
+            </div>
+        <!-- /.modal-content -->
+        </div>
+    <!-- /.modal-dialog -->
+    </div>
 </body>
-<!--<script src="/static/js/jquery/jquery-1.12.4.min.js"></script>-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 {% load staticfiles %}
 <script src="{% static 'js/jquery/jquery-1.12.4.min.js' %}" ></script>
-<!--<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>-->
-<script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'bootstrap/css/bootstrap-table.css' %}" rel="stylesheet">
+<link href="{% static 'bootstrap/css/bootstrap-datetimepicker.css' %}" rel="stylesheet">
+
+<!--<link href="~/Styles/sweetalert.css" rel="stylesheet" />-->
+
+<!--<script src="~/Scripts/sweetalert.min.js"></script>-->
+<script src="{% static 'bootstrap/js/bootstrap.js' %}" ></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
+<script src="{% static 'bootstrap/js/bootstrap-table.js' %}" ></script>
+<script src="{% static 'bootstrap/js/bootstrap-table-zh-CN.js' %}" ></script>
+<script src="{% static 'bootstrap/js/bootstrap-datetimepicker.js' %}" ></script>
+
+<script src="{% static 'bootstrap/js/bootbox.js' %}" ></script>
+
+
 <script>
-  $("#b1").on("click", function () {
-    $.ajax({
-      url:"/findresult/",
-      type:"GET",
-      <!--dataType:'json',-->
-      data:{"i1":$("#i1").val(),"i2":$("#i2").val()},
-      success:function (data) {
-        $("#i3").val(data);
-        var obj=data;
-		var tbody=$('<tbody></tbody>');
-		$(obj).each(function (index){
-			var val=obj[index];
-			var tr=$('<tr></tr>');
-			tr.append('<td>'+ val.id + '</td>' + '<td>'+ val.name + '</td>');
-			tbody.append(tr);
-		});
-$('#pstable tbody').replaceWith(tbody);
 
 
-      }
+    $("#delete").on("click", function () {
+        $("#delcfmOverhaul").modal({
+            backdrop : 'static',
+            keyboard : false
+        });
     })
-  })
+
+    $("#deleteHaulBtn").on("click", function () {
+        $.ajax({
+          url:"/delete/",
+          type:"POST",
+          <!--dataType:'json',-->
+          data:{"id":$("#i1").val()},
+          success:function (data) {
+            $('#delcfmOverhaul').modal('hide');
+            $table.bootstrapTable('refresh');
+          }
+        })
+    })
+
+    $("#search").on("click", function () {
+        InitMainTable ();
+        <!--$.ajax({-->
+          <!--url:"/findresult/",-->
+          <!--type:"GET",-->
+          <!--&lt;!&ndash;dataType:'json',&ndash;&gt;-->
+          <!--data:{"i1":$("#i1").val(),"i2":$("#i2").val()},-->
+          <!--success:function (data) {-->
+            <!--$("#i3").val(data);-->
+            <!--var obj=data;-->
+            <!--var tbody=$('<tbody></tbody>');-->
+            <!--$(obj).each(function (index){-->
+                <!--var val=obj[index];-->
+                <!--var tr=$('<tr></tr>');-->
+                <!--tr.append('<td>'+ val.id + '</td>' + '<td>'+ val.name + '</td>'+ '<td> 删除 </td>');-->
+                <!--tbody.append(tr);-->
+            <!--});-->
+            <!--$('#datatable tbody').replaceWith(tbody);-->
+          <!--}-->
+        <!--})-->
+    })
+
+
+    $("#add").on("click", function () {
+        $('#myModal').modal();
+    })
+
+    $("#edit").on("click", function () {
+        var index = 0;
+        alert(9);
+        $("#dataTable tr:nth-child("+ (index+1) +") td.editable").each(function(){
+            var value = $(this).text();
+            $(this).html("<input value='"+value+"'>");
+        });
+    })
+
+
+
+    $.ajaxSetup({
+        data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+    })
+    var $table;
+    var rows=8;
+        //初始化bootstrap-table的内容
+    function InitMainTable () {
+        //记录页面bootstrap-table全局变量$table，方便应用
+        var queryUrl = '/findresult/'
+        $table = $('#dataTable').bootstrapTable({
+            url: queryUrl,                      //请求后台的URL（*）
+            method: 'GET',                      //请求方式（*）
+            //toolbar: '#toolbar',              //工具按钮用哪个容器
+            editable:true,
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 1,                     //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列（选择显示的列）
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+            showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                  //是否显示父子表
+            //得到查询的参数
+            queryParams : function (params) {
+                //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                var temp = {
+                    rows: params.limit,                         //页面大小
+                    page: (params.offset / params.limit) + 1,   //页码
+                    sort: params.sort,      //排序列名
+                    sortOrder: params.order //排位命令（desc，asc）
+                };
+                return temp;
+            },
+            columns: [{
+                checkbox: true,
+                visible: true                  //是否显示复选框
+            }, {
+                field: 'username',
+                title: '姓名',
+                sortable: true
+            }, {
+                field: 'Mobile',
+                title: '手机',
+                sortable: true
+            }, {
+                field: 'Email',
+                title: '邮箱',
+                sortable: true,
+                formatter: emailFormatter
+            }, {
+                field: 'Homepage',
+                title: '主页',
+                formatter: linkFormatter
+            }, {
+                field: 'Hobby',
+                title: '兴趣爱好'
+            }, {
+                field: 'Gender',
+                title: '性别',
+                sortable: true
+            }, {
+                field: 'Age',
+                title: '年龄'
+            }, {
+                field: 'BirthDate',
+                title: '出生日期'//,
+               // formatter: dateFormatter
+            }, {
+                field: 'Height',
+                title: '身高'
+            }, {
+                field: 'Note',
+                title: '备注'
+            }, {
+                field:'id',
+                title: '操作',
+                width: 120,
+                align: 'center',
+                valign: 'middle',
+                //formatter: actionFormatter
+                formatter: function(value, row, index){
+                    return '<button type="button" class="btn btn-primary btn-xs" onclick="updateData(' +index+','+ row.id + ')">修改</button>&nbsp;<button type="button" class="btn btn-primary btn-xs" onclick="deleteData(' + row.id + ')">删除</button>';
+                }
+            }],
+            onLoadSuccess: function (data) {
+
+            },
+            onLoadError: function () {
+                <!--showTips("数据加载失败！");-->
+            },
+            onDblClickRow: function (row, $element) {
+                var id = row.ID;
+                //EditViewById(id, 'view');
+            },
+        });
+    };
+
+    function updateData(index,id){
+        alert(id)
+        $('#dataTable a[data-name=name].editable').editable('toggleDisabled');
+        $("#dataTable").bootstrapTable('updateRow', {
+        index: index,
+        row: {
+        id: 5
+        }
+    });
+    }
+
+    function deleteData(id){
+
+    }
+
+    //连接字段格式化
+    function linkFormatter(value, row, index) {
+        return "<a href='" + value + "' title='单击打开连接' target='_blank'>" + value + "</a>";
+    }
+    //Email字段格式化
+    function emailFormatter(value, row, index) {
+        return "<a href='mailto:" + value + "' title='单击打开连接'>" + value + "</a>";
+    }
+    //性别字段格式化
+    function sexFormatter(value) {
+        if (value == "女") { color = 'Red'; }
+        else if (value == "男") { color = 'Green'; }
+        else { color = 'Yellow'; }
+
+        return '<div  style="color: ' + color + '">' + value + '</div>';
+    }
 </script>
 </html>
