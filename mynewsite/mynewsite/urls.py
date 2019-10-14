@@ -28,7 +28,7 @@ urlpatterns = [
     path('', index),
     url(r'^ajax_add/', views.ajax_add),
     url(r'^findresult/', views.findresult),
-    path('delete/', views.delete),
+    # path('delete/', views.delete),
     path('delete2/', view2.delete2),
 ]
 

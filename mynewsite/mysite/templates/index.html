@@ -15,40 +15,26 @@
 <hr>
 <em>今日佳句：{{ quote }}</em>
 <br>
-<input type="text" id="i1">+
-<input type="text" id="i2">=
-<input type="text" id="i3">
-</br>
-</br>
+<br>
+
+
+<div class="col-lg-2">
+    <div class="input-group">
+        <span class="input-group-addon">
+            姓名
+        </span>
+        <input type="text" class="form-control" placeholder="姓名" id="inputname" name="inputname">
+    </div><!-- /input-group -->
+</div><!-- /.col-lg-6 -->
 
 <input type="button" value="查询" id="search" class="btn btn-info">
 <input type="button" value="添加" id="add" class="btn btn-info">
 <input type="button" value="修改" id="edit" class="btn btn-info">
 <input type="button" value="删除" id="delete" class="btn btn-info">
-</br>
-</br>
-<table class="table table-striped table-bordered table-hover" align="center" id="dataTable" border="1">
-        <thead>
-            <tr>
-                <th>&nbsp;</th>
-                <th>姓名</th>
-                <th>编号</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{item.id}}</td>
-            <td>{{item.username}}</td>
-            <td>{{item.id}}</td>
-            <td>修改</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-
-    </table>
+<br>
+<br>
+<table class="table table-striped table-bordered table-hover" id="dataTable">
+</table>
 
 
 
@@ -134,11 +120,9 @@
 <script src="{% static 'bootstrap/js/bootstrap-table-zh-CN.js' %}" ></script>
 <script src="{% static 'bootstrap/js/bootstrap-datetimepicker.js' %}" ></script>
 
-<script src="{% static 'bootstrap/js/bootbox.js' %}" ></script>
 
 
 <script>
-
 
     $("#delete").on("click", function () {
         $("#delcfmOverhaul").modal({
@@ -161,7 +145,9 @@
     })
 
     $("#search").on("click", function () {
+
         InitMainTable ();
+        $('#dataTable').bootstrapTable(('refresh')); // 很重要的一步，刷新url！
         <!--$.ajax({-->
           <!--url:"/findresult/",-->
           <!--type:"GET",-->
@@ -189,7 +175,7 @@
 
     $("#edit").on("click", function () {
         var index = 0;
-        alert(9);
+
         $("#dataTable tr:nth-child("+ (index+1) +") td.editable").each(function(){
             var value = $(this).text();
             $(this).html("<input value='"+value+"'>");
@@ -202,11 +188,115 @@
         data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
     })
     var $table;
-    var rows=8;
+    var rows=1;
         //初始化bootstrap-table的内容
     function InitMainTable () {
+        var itemCode=[], //所选择因子的code
+            itemName=[];  // 所选择因子的text
+        var columns = [],
+        initColumns = [],//公共固定列
+        itemColumns = []; //动态因子列
+        initColumns = [
+            {
+                title: '序号',
+                field: '',
+                align: 'center',
+                rowspan: 2,
+                formatter: function (value, row, index) {
+                    var pageSize = $('#dataTable').bootstrapTable('getOptions').pageSize;     //通过table的#id 得到每页多少条
+                    var pageNumber = $('#dataTable').bootstrapTable('getOptions').pageNumber; //通过table的#id 得到当前第几页
+                    return pageSize * (pageNumber - 1) + index + 1;    // 返回每条的序号： 每页条数 *（当前页 - 1 ）+ 序号
+                }
+            },{
+                checkbox: true,
+                rowspan: 2,
+                //visible: true                  //是否显示复选框
+            }, {
+                field: 'username',
+                title: '开发组',
+                rowspan: 2,
+                sortable: true,
+                edit:{type:'text' }
+            <!--},{-->
+                <!--field:'id',-->
+                <!--title: '操作',-->
+                <!--rowspan: 2,-->
+                <!--width: 120,-->
+                <!--align: 'center',-->
+                <!--valign: 'middle',-->
+                <!--edit:false,-->
+                //formatter: actionFormatter
+                <!--formatter: function(value, row, index){-->
+                    <!--return '<button type="button" class="btn btn-primary btn-xs" onclick="updateData(' +index+','+ row.id + ')">修改</button>&nbsp;<button type="button" class="btn btn-primary btn-xs" onclick="deleteData(' + row.id + ')">删除</button>';-->
+                    <!--return "<button Onclick='saveRow("+index+")' class='btn small'><i class='fa fa-edit'></i> 保存</button><button Onclick='editRow("+index+")' class='btn small blue'><i class='fa fa-edit'></i> 编辑</button><button οnclick='delRow(\""+row.attrValue+"\")' class='btn small red'><i class='fa fa-trash-o'></i> 删除</button>";-->
+                <!--}-->
+            }
+        ];
+        itemName[0]="10月版";
+        itemName[1]="11月版";
+        itemName[2]="12月版";
+        <!--if(itemCode.length>0){-->
+            //根据选择因子绘制动态表头
+            for (var i = 0; i < itemName.length; i++) {
+                initColumns.push (
+                    {
+                        field: "",
+                        title: itemName[i] ,
+                        width: 80,
+                        align: "right",
+                        halign: "center",
+                        colspan: 6
+                    }
+                );
+
+                itemColumns.push(
+                    {
+                        field: 'item' + i + itemName[i],
+                        title: '已覆盖程序数',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'item' + i + itemName[i],
+                        title: '程序总数',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    },{
+                        field: 'item' + i + itemName[i],
+                        title: '程序覆盖率',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    },{
+                        field: 'item' + i + itemName[i],
+                        title: '已覆盖分支数',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    },{
+                        field: 'item' + i + itemName[i],
+                        title: '变更分支总数',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    },{
+                        field: 'item' + i + itemName[i],
+                        title: '分支覆盖率',
+                        width: 80,
+                        align: 'center',
+                        halign: 'center'
+                    }
+                );
+            }
+        <!--}-->
+        columns.push(initColumns, itemColumns); //合并表格内容
+
+
         //记录页面bootstrap-table全局变量$table，方便应用
         var queryUrl = '/findresult/'
+        $('#dataTable').bootstrapTable('destroy');
         $table = $('#dataTable').bootstrapTable({
             url: queryUrl,                      //请求后台的URL（*）
             method: 'GET',                      //请求方式（*）
@@ -218,11 +308,12 @@
             sortable: true,                     //是否启用排序
             sortOrder: "asc",                   //排序方式
             sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageNumber: rows,                      //初始化加载第一页，默认第一页,并记录
             pageSize: 1,                     //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             search: false,                      //是否显示表格搜索
             strictSearch: true,
+
             showColumns: true,                  //是否显示所有的列（选择显示的列）
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
@@ -239,62 +330,33 @@
                     rows: params.limit,                         //页面大小
                     page: (params.offset / params.limit) + 1,   //页码
                     sort: params.sort,      //排序列名
-                    sortOrder: params.order //排位命令（desc，asc）
+                    sortOrder: params.order, //排位命令（desc，asc）
+                    inputname: $('#inputname').val(), // 请求时向服务端传递的参数
                 };
                 return temp;
             },
-            columns: [{
-                checkbox: true,
-                visible: true                  //是否显示复选框
-            }, {
-                field: 'username',
-                title: '姓名',
-                sortable: true,
-                edit:{type:'text' }
-            }, {
-                field: 'Mobile',
-                title: '手机',
-                sortable: true
-            }, {
-                field: 'Email',
-                title: '邮箱',
-                sortable: true,
-                formatter: emailFormatter
-            }, {
-                field: 'Homepage',
-                title: '主页',
-                formatter: linkFormatter
-            }, {
-                field: 'Hobby',
-                title: '兴趣爱好'
-            }, {
-                field: 'Gender',
-                title: '性别',
-                sortable: true
-            }, {
-                field: 'Age',
-                title: '年龄'
-            }, {
-                field: 'BirthDate',
-                title: '出生日期'//,
-               // formatter: dateFormatter
-            }, {
-                field: 'Height',
-                title: '身高'
-            }, {
-                field: 'Note',
-                title: '备注'
-            }, {
-                field:'id',
-                title: '操作',
-                width: 120,
-                align: 'center',
-                valign: 'middle',
-                //formatter: actionFormatter
-                formatter: function(value, row, index){
-                    return '<button type="button" class="btn btn-primary btn-xs" onclick="updateData(' +index+','+ row.id + ')">修改</button>&nbsp;<button type="button" class="btn btn-primary btn-xs" onclick="deleteData(' + row.id + ')">删除</button>';
+            columns: columns, //动态拼接生成表格
+            <!--[, {-->
+                <!--field: 'BirthDate',-->
+                <!--title: '出生日期',-->
+                <!--rowspan: 2,-->
+               <!--// formatter: dateFormatter-->
+               <!--edit:{type:'text' }-->
+            <!--}],-->
+            onEditableHidden: function(field, row, $el, reason) { // 当编辑状态被隐藏时触发
+                alert(field);
+                if(reason === 'save') {
+                    var $td = $el.closest('tr').children();
+                    $td.eq(-1).html((row.price*row.number).toFixed(2));
+                    $el.closest('tr').next().find('.editable').editable('show'); //编辑状态向下一行移动
+                } else if(reason === 'nochange') {
+                    $el.closest('tr').next().find('.editable').editable('show');
                 }
-            }],
+            },
+            onEditableSave: function (field, row, oldValue, $el) {
+                  $table = $('#dataTable').bootstrapTable({});
+                  $table.bootstrapTable('updateRow', {index: row.rowId, row: row});
+            },
             onLoadSuccess: function (data) {
 
             },
@@ -307,16 +369,43 @@
             },
         });
     };
-
-    function updateData(index,id){
-        alert(id)
-        $('#dataTable a[data-name=name].editable').editable('toggleDisabled');
-        $("#dataTable").bootstrapTable('updateRow', {
+function saveRow(index, value){
+    var obj = $("#dataTable tr:nth-child("+ (index+1) +") td.editable");
+    var attrValue = obj.first().find("input").val();
+    var sellPrice = obj.last().find("input").val();
+    var newData = {
+        attrValue: attrValue,
+        sellPrice: sellPrice
+    };
+    $("#dataTable").bootstrapTable('updateRow', {
         index: index,
-        row: {
-        id: 5
-        }
+        row: newData
     });
+    obj.find("input").remove();
+}
+function editRow(index){
+    $("#dataTable tr:nth-child("+ (index+1) +") td.editable").each(function(){
+    alert(9)
+        var value = $(this).text();
+        $(this).html("<input value='"+value+"'>");
+    });
+}
+function delRow(value){
+    $("#dataTable").bootstrapTable('removeByUniqueId', value);
+}
+
+    function editRow1(index,id){
+        $("#dataTable tr:nth-child("+ (index+1) +") td.editable").each(function(){
+            var value = $(this).text();
+            $(this).html("<input value='"+value+"'>");
+        });
+        <!--$('#dataTable a[data-name=name].editable').editable('toggleDisabled');-->
+        <!--$("#dataTable").bootstrapTable('updateRow', {-->
+        <!--index: index,-->
+        <!--row: {-->
+        <!--id: 5-->
+        <!--}-->
+    <!--});-->
     }
 
     function deleteData(id){
