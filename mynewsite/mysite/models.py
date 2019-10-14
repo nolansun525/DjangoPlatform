@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 from django.utils import timezone
 
@@ -39,6 +38,26 @@ class Product(models.Model):
     price = models.PositiveIntegerField()
     size = models.CharField(max_length=1, choices=SIZES)
     qty = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+
+class PMOS_COVERATE_AUTOTEST(models.Model):
+
+    DEPT = models.CharField(max_length=20,null=True)
+    TEAM = models.CharField(max_length=20,null=True)
+    VERSION = models.CharField(max_length=11,null=True)
+    COVEREDPROG = models.CharField(max_length=6,null=True)
+    ALLPROG = models.CharField(max_length=6,null=True)
+    COVERATEPROG = models.CharField(max_length=7,null=True)
+    COVERDBRANCH = models.CharField(max_length=6,null=True)
+    ALLBRANCH = models.CharField(max_length=6,null=True)
+    COVERATEBRANCH = models.CharField(max_length=7,null=True)
+    FLAG = models.CharField(max_length=2,null=True)
+    UPDATE_DATE = models.CharField(max_length=20,null=True)
+    UPDATE_TIME = models.CharField(max_length=20,null=True)
 
     def __str__(self):
         return self.name

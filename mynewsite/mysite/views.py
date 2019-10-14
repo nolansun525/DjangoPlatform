@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 # 数据库连接
 connection = pymysql.connect(host='127.0.0.1', port=3306, user='root',
-                             password='3E_DRHN@eeechina.cn', db='webmott2', charset='utf8',
+                             password='123qwe', db='webmott2', charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
 # 创建数据库连接“执行”对象
 cur = connection.cursor()

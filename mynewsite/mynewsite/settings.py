@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'webmott2',
         'USER': 'root',
-        'PASSWORD': '3E_DRHN@eeechina.cn',
+        'PASSWORD': '123qwe',
         'HOST': 'localhost',
         'PORT': '3306',
     }
