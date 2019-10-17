@@ -7,7 +7,7 @@ class CommORCL:
         self.connection = cx_Oracle.connect('BJ4USER/BJ4USER@' + ip + ':1521/orcl')
         self.cur = self.connection.cursor()
 
-    def query_Dict(self, SQL):
+    def query_List(self, SQL):
         self.cur.execute(SQL)
         results = self.cur.fetchall()
         cols = [d[0] for d in self.cur.description]
@@ -17,7 +17,6 @@ class CommORCL:
             b = dict(zip(cols, row))
             re.append(b)
 
-        print(re)
         return re
 
     def disconnect(self):
