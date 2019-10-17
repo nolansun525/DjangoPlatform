@@ -1,4 +1,5 @@
 # _*_ coding: utf-8 _*_
+import cx_Oracle
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 import random, json
@@ -8,9 +9,7 @@ from django.views.decorators import csrf
 from datetime import date, datetime
 
 # 数据库连接
-connection = pymysql.connect(host='127.0.0.1', port=3306, user='root',
-                             password='123qwe', db='webmott2', charset='utf8',
-                             cursorclass=pymysql.cursors.DictCursor)
+connection = cx_Oracle.connect('BJ4USER/BJ4USER@localhost:1521/orcl')
 # 创建数据库连接“执行”对象
 cur = connection.cursor()
 

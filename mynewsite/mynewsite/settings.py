@@ -78,12 +78,12 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'webmott2',
-        'USER': 'root',
-        'PASSWORD': '123qwe',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'ORCL',
+        'USER': 'BJ4USER',
+        'PASSWORD': 'BJ4USER',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '1521',
     }
 }
 
