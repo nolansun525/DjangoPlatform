@@ -6,26 +6,46 @@
     <title>Welcome to mynewsite</title>
 </head>
 <body>
-<h2>Welcome to mynewsite</h2>
-<hr>
-<ul>
-    <li><a href='/list'>二手机列表</a></li>
-    <li><a href='/about'>关于我</a></li>
-</ul>
-<hr>
-<em>今日佳句：{{ quote }}</em>
+
 <br>
 <br>
-
-
 <div class="col-lg-2">
     <div class="input-group">
         <span class="input-group-addon">
-            姓名
+            年份
         </span>
-        <input type="text" class="form-control" placeholder="姓名" id="inputname" name="inputname">
-    </div><!-- /input-group -->
-</div><!-- /.col-lg-6 -->
+        <select class="form-control" id="inputYear">
+			<option id="18年">18年</option>
+			<option id="19年">19年</option>
+		</select>
+    </div>
+</div>
+<div class="col-lg-2 col-xm-2">
+    <div class="input-group">
+        <span class="input-group-addon">
+            季度
+        </span>
+        <select class="form-control" id="inputQuarter">
+			<option id="1季度">1季度</option>
+			<option id="2季度">2季度</option>
+            <option id="3季度">3季度</option>
+			<option id="4季度">4季度</option>
+		</select>
+    </div>
+</div>
+<div class="col-lg-3">
+    <div class="input-group">
+        <span class="input-group-addon">
+            程序类型
+        </span>
+
+        <select class="form-control" id="inputType">
+			<option id="0">核心程序分支覆盖率</option>
+			<option id="1">变更程序分支覆盖率</option>
+		</select>
+
+    </div>
+</div>
 
 <input type="button" value="查询" id="search" class="btn btn-info">
 <input type="button" value="添加" id="add" class="btn btn-info">
@@ -33,7 +53,7 @@
 <input type="button" value="删除" id="delete" class="btn btn-info">
 <br>
 <br>
-<table class="table table-striped table-bordered table-hover" id="dataTable">
+<table class="table table-striped table-bordered table-hover table-responsive" id="dataTable">
 </table>
 
 
@@ -99,6 +119,8 @@
         </div>
     <!-- /.modal-dialog -->
     </div>
+
+<div id="main" style="width: 600px;height:400px;margin: 0 auto"></div>
 </body>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,8 +143,117 @@
 <script src="{% static 'bootstrap/js/bootstrap-datetimepicker.js' %}" ></script>
 
 
+<script src="{% static 'js/echarts/echarts.min.js' %}" ></script>
+<style>
+    .table .thead-blue th {
+        color: #fff;
+        background-color: #3195f1;
+        border-color: #0d7adf;
+    }
+</style>
 
 <script>
+var label = '温度预警线';
+option = {
+    title : {
+        text: '各组程序覆盖率和分支覆盖率'
+    },
+    tooltip : {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['程序覆盖率','分支覆盖率'],
+        y:'bottom'
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            dataView : {show: true, readOnly: false},
+            magicType : {show: true, type: ['line', 'bar']},
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'category',
+            data : ['1组','2组','3组','4组','5组','6组','7组','8组','9组','10组']
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name:'程序覆盖率',
+            type:'bar',
+            data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+            markPoint : {
+                data : [
+                    {type : 'max', name: '最大值'},
+                    {type : 'min', name: '最小值'}
+                ]
+            },
+            markLine : {
+                symbol: 'none',
+                itemStyle: {
+                    normal: {
+                        label:
+                            {
+                                show: true,
+                                //position: 'right',
+                                 formatter: '目标值60%',
+                            }
+                    }
+                },
+                data : [
+                    {name: label,
+                    //silent:true,             //鼠标悬停事件  true没有，false有
+                    <!--xAxis: 0, yAxis: 60,-->
+                    yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                    }
+                ]
+            }
+        },
+        {
+            name:'分支覆盖率',
+            type:'bar',
+            data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+            markPoint : {
+                data : [
+                    {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183},
+                    {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
+                ]
+            },
+            markLine : {
+                symbol: 'none',
+                itemStyle: {
+                    normal: {
+                        label:
+                            {
+                                show: true,
+                                //  position: 'center',
+                                 formatter: '目标值50%',
+                            }
+                    }
+                },
+                data : [
+                    {yAxis: 50
+                    }
+                ]
+            }
+        }
+
+    ]
+};
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
 
     $("#delete").on("click", function () {
         $("#delcfmOverhaul").modal({
@@ -170,7 +301,17 @@
 
 
     $("#add").on("click", function () {
-        $('#myModal').modal();
+        <!--$('#myModal').modal();-->
+
+        $.ajax({
+          url:"/draw/",
+          type:"post",
+          <!--dataType:'json',-->
+          <!--data:{"i1":$("#i1").val(),"i2":$("#i2").val()},-->
+          success:function (data) {
+
+          }
+        })
     })
 
     $("#edit").on("click", function () {
@@ -201,6 +342,7 @@
                 title: '序号',
                 field: '',
                 align: 'center',
+                valign: 'middle',
                 rowspan: 2,
                 formatter: function (value, row, index) {
                     var pageSize = $('#dataTable').bootstrapTable('getOptions').pageSize;     //通过table的#id 得到每页多少条
@@ -210,13 +352,14 @@
             },{
                 checkbox: true,
                 rowspan: 2,
+                valign: 'middle'
                 //visible: true                  //是否显示复选框
             }, {
                 field: 'username',
                 title: '开发组',
                 rowspan: 2,
                 sortable: true,
-                edit:{type:'text' }
+                valign: 'middle'
             <!--},{-->
                 <!--field:'id',-->
                 <!--title: '操作',-->
@@ -235,7 +378,6 @@
         itemName[0]="10月版";
         itemName[1]="11月版";
         itemName[2]="12月版";
-        <!--if(itemCode.length>0){-->
             //根据选择因子绘制动态表头
             for (var i = 0; i < itemName.length; i++) {
                 initColumns.push (
@@ -251,38 +393,38 @@
 
                 itemColumns.push(
                     {
-                        field: 'item' + i + itemName[i],
+                        field: 'COVEREDPROG' + i,
                         title: '已覆盖程序数',
                         width: 80,
                         align: 'center',
                         halign: 'center'
                     },
                     {
-                        field: 'item' + i + itemName[i],
+                        field: 'ALLPROG' + i,
                         title: '程序总数',
                         width: 80,
                         align: 'center',
                         halign: 'center'
                     },{
-                        field: 'item' + i + itemName[i],
+                        field: 'COVERATEPROG' + i,
                         title: '程序覆盖率',
                         width: 80,
                         align: 'center',
                         halign: 'center'
                     },{
-                        field: 'item' + i + itemName[i],
+                        field: 'COVERDBRANCH' + i,
                         title: '已覆盖分支数',
                         width: 80,
                         align: 'center',
                         halign: 'center'
                     },{
-                        field: 'item' + i + itemName[i],
+                        field: 'ALLBRANCH' + i,
                         title: '变更分支总数',
                         width: 80,
                         align: 'center',
                         halign: 'center'
                     },{
-                        field: 'item' + i + itemName[i],
+                        field: 'COVERATEBRANCH' + i,
                         title: '分支覆盖率',
                         width: 80,
                         align: 'center',
@@ -313,7 +455,6 @@
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             search: false,                      //是否显示表格搜索
             strictSearch: true,
-
             showColumns: true,                  //是否显示所有的列（选择显示的列）
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
@@ -323,6 +464,8 @@
             showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图
             detailView: false,                  //是否显示父子表
+            theadClasses: "thead-blue",         //设置thead-blue为表头样式
+            //classes: "table table-bordered table-striped table-sm table-dark",
             //得到查询的参数
             queryParams : function (params) {
                 //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
@@ -331,7 +474,7 @@
                     page: (params.offset / params.limit) + 1,   //页码
                     sort: params.sort,      //排序列名
                     sortOrder: params.order, //排位命令（desc，asc）
-                    inputname: $('#inputname').val(), // 请求时向服务端传递的参数
+                    inputYear: $('#inputYear').val(), // 请求时向服务端传递的参数
                 };
                 return temp;
             },
@@ -344,7 +487,7 @@
                <!--edit:{type:'text' }-->
             <!--}],-->
             onEditableHidden: function(field, row, $el, reason) { // 当编辑状态被隐藏时触发
-                alert(field);
+
                 if(reason === 'save') {
                     var $td = $el.closest('tr').children();
                     $td.eq(-1).html((row.price*row.number).toFixed(2));
