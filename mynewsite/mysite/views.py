@@ -3,30 +3,25 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 import random, json
 from mysite.models import Product
-import pymysql   # 数据库驱动
+from mynewsite.common.CommORCL import CommORCL
+import pymysql  # 数据库驱动
 from django.views.decorators import csrf
 from datetime import date, datetime
 
-# 数据库连接
-connection = pymysql.connect(host='127.0.0.1', port=3306, user='root',
-                             password='123qwe', db='webmott2', charset='utf8',
-                             cursorclass=pymysql.cursors.DictCursor)
-# 创建数据库连接“执行”对象
-cur = connection.cursor()
+commORCL = CommORCL('localhost')
 
 
 def index(request):
     context = {}  # 封装返回参数
     sql = "select * from auth_user"
     # 执行sql语句
-    cur.execute(sql)
     # 获取所有记录列表
-    results = cur.fetchall()  # 查询所有
+    results = commORCL.query_Dict(sql)
     context['items'] = results  # 存入集合
     quotes = ['今日事，今日毕',
-            '要怎么收获，先那么栽',
-            '知识就是力量',
-            '一个人的个性就是他的命运']
+              '要怎么收获，先那么栽',
+              '知识就是力量',
+              '一个人的个性就是他的命运']
     quote = random.choice(quotes)
     return render(request, 'index.html', context)
 
@@ -36,7 +31,7 @@ def about(request):
 
 
 def listing(request):
-    products = Product.objects.all()	
+    products = Product.objects.all()
     return render(request, 'list.html', locals())
 
 
@@ -65,15 +60,13 @@ def findresult(request):
         # sortName = request.GET.get('sortName')
         # sortOrder = request.GET.get('sortOrder')
     # print(num1)
-    sql = "select id,username,password,email,DATE_FORMAT(date_joined,'%Y-%m-%d %H:%M:%S') BirthDate from auth_user "
+    sql = "select id,username,password,email,to_char(date_joined,'YYYY-mm-dd HH24:MI:SS') BirthDate from auth_user where username ='admin' "
     # 执行sql语句
-    cur.execute(sql)
+    #results = commORCL.query_Dict(sql)
+    commORCL.disconnect()
     # 获取所有记录列表
-    results = cur.fetchall()  # 查询所有
-
-
     # reCount = cur.execute('insert into UserInfo(Name,Address) values(%s,%s)', ('alex', 'usa'))
-
+    results = [{'id': 1, 'username': 'admin', 'password': 'pbkdf2_sha256$150000$CR59ZqpHz2fO$9vPYn49tWiNwGOtbflHV7vE1K7TCbgLPS+Ok4rbJKvc=', 'email': '', 'BirthDate': '2019-10-11 08:October:47'}]
     # rows = []
     print(results)
     print("test666666----------------------------------")
@@ -88,21 +81,21 @@ def findresult(request):
 
 def delete(request):
     id = request.POST.get('id')
-    print(id+"=============")
+    print(id + "=============")
 
-    sql = "delete from auth_user where id='"+id+"'";
+    sql = "delete from auth_user where id='" + id + "'";
     # 执行sql语句
 
     try:
         # 执行sql语句
-        cur.execute(sql)
+        # cur.execute(sql)
         print("success")
         # 提交到数据库执行
-        connection.commit()
+        # connection.commit()
     except:
         print("error")
         # 如果发生错误则回滚
-        connection.rollback()
+        # connection.rollback()
 
         # article = Article.objects.get(id=article_id)
     # article.delete()
