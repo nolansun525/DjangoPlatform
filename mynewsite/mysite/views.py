@@ -4,9 +4,11 @@ from django.http import HttpResponse, Http404
 import random, json
 from mysite.models import Product
 from mynewsite.common.CommORCL import CommORCL
+import pymysql  # 数据库驱动
+from django.views.decorators import csrf
+from datetime import date, datetime
 
 
-# commORCL = CommORCL('127.0.0.1')
 
 
 def index(request):
@@ -14,8 +16,10 @@ def index(request):
     sql = "select * from auth_user"
     # 执行sql语句
     # 获取所有记录列表
-    # results = commORCL.query_Dict(sql)
-    # context['items'] = results  # 存入集合
+    commORCL = CommORCL()
+    results = commORCL.query_List(sql)
+    commORCL.disconnect()
+    context['items'] = results  # 存入集合
     quotes = ['今日事，今日毕',
               '要怎么收获，先那么栽',
               '知识就是力量',
@@ -49,43 +53,25 @@ def ajax_add(request):
 
 
 def findresult(request):
-    inputYear = request.GET.get('inputYear')
-    # pageSize = request.GET.get('rows')
-    # pageNumber = request.GET.get('page')
-    # sortName = request.GET.get('sort')
-    # sortOrder = request.GET.get('sortOrder')
-    # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    # print("inputYear:" + inputYear)
-
-    # searchText = request.GET.get('searchText')
-    # sortName = request.GET.get('sortName')
-    # sortOrder = request.GET.get('sortOrder')
+    if request.method == 'GET':
+        pageSize = int(request.GET.get('rows'))
+        pageNumber = int(request.GET.get('page'))
+        print(pageSize)
+        print(pageNumber)
+        # searchText = request.GET.get('searchText')
+        # sortName = request.GET.get('sortName')
+        # sortOrder = request.GET.get('sortOrder')
     # print(num1)
-    strWhere = ""  # 查询条件
-    strPage = ""  # 分页和排序
-    if (inputYear != None and inputYear != ''):
-        strWhere = " where username ='" + inputYear + "'"
-
-    # if (sortName != None):
-    #     strPage = " order by " + sortName + " " + sortOrder
-    # startNumber = (int(pageSize) * int(pageNumber) - 1)  # 每页数量*页码 减1
-    # print("startNumber:" + str(startNumber))
-    # endNumber = int(pageNumber) * int(pageSize)
-    # strPage += " limit " + str(startNumber) + "," + str(endNumber)
-
-
-
-    commORCL = CommORCL('localhost')
-    sql = "select * from MYSITE_PMOS_COVERATE_AUTOTEST  "
+    sql = "select id,username,password,email,to_char(date_joined,'YYYY-mm-dd HH24:MI:SS') BirthDate from auth_user where username ='admin' "
     # 执行sql语句
+    commORCL = CommORCL()
     results = commORCL.query_List(sql)
-    print(results)
     commORCL.disconnect()
     # 获取所有记录列表
     # reCount = cur.execute('insert into UserInfo(Name,Address) values(%s,%s)', ('alex', 'usa'))
-    # results = [{'id': 1, 'username': 'admin', 'password': 'pbkdf2_sha256$150000$CR59ZqpHz2fO$9vPYn49tWiNwGOtbflHV7vE1K7TCbgLPS+Ok4rbJKvc=', 'email': '', 'BirthDate': '2019-10-11 08:October:47'}]
+    #results = [{'id': 1, 'username': 'admin', 'password': 'pbkdf2_sha256$150000$CR59ZqpHz2fO$9vPYn49tWiNwGOtbflHV7vE1K7TCbgLPS+Ok4rbJKvc=', 'email': '', 'BirthDate': '2019-10-11 08:October:47'}]
     # rows = []
-
+    print(results)
     print("test666666----------------------------------")
 
     data = {"total": results.__len__(), "rows": results}
