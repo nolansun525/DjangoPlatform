@@ -16,7 +16,7 @@ def index(request):
     sql = "select * from auth_user"
     # 执行sql语句
     # 获取所有记录列表
-    commORCL = CommORCL('localhost')
+    commORCL = CommORCL()
     results = commORCL.query_List(sql)
     commORCL.disconnect()
     context['items'] = results  # 存入集合
@@ -64,7 +64,7 @@ def findresult(request):
     # print(num1)
     sql = "select id,username,password,email,to_char(date_joined,'YYYY-mm-dd HH24:MI:SS') BirthDate from auth_user where username ='admin' "
     # 执行sql语句
-    commORCL = CommORCL('localhost')
+    commORCL = CommORCL()
     results = commORCL.query_List(sql)
     commORCL.disconnect()
     # 获取所有记录列表

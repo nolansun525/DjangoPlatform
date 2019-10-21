@@ -1,12 +1,8 @@
 # _*_ coding: utf-8 _*_
 import cx_Oracle
-from django.shortcuts import render
 from django.http import HttpResponse, Http404
 import random, json
-from mysite.models import Product
-import pymysql   # 数据库驱动
-from django.views.decorators import csrf
-from datetime import date, datetime
+
 
 # 数据库连接
 connection = cx_Oracle.connect('BJ4USER/BJ4USER@localhost:1521/orcl')

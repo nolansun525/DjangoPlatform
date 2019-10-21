@@ -3,7 +3,8 @@ import cx_Oracle
 
 class CommORCL:
 
-    def __init__(self, ip):
+    def __init__(self):
+        ip = "localhost"
         self.connection = cx_Oracle.connect('BJ4USER/BJ4USER@' + ip + ':1521/orcl')
         self.cur = self.connection.cursor()
 
