@@ -12,7 +12,6 @@ class CommORCL:
         self.cur.execute(SQL)
         results = self.cur.fetchall()
         cols = [d[0] for d in self.cur.description]
-        print(results)
         re = []
         for row in results:
             b = dict(zip(cols, row))
