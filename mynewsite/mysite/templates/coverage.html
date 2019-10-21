@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>覆盖率查询</title>
+</head>
+<body>
+
+    <br>
+    <br>
+    <div class="col-lg-2">
+        <div class="input-group">
+            <span class="input-group-addon">
+                年份
+            </span>
+            <select class="form-control" id="inputYear">
+                <option id="18年">18年</option>
+                <option id="19年">19年</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-lg-2 col-xm-2">
+        <div class="input-group">
+            <span class="input-group-addon">
+                季度
+            </span>
+            <select class="form-control" id="inputQuarter">
+                <option id="1季度">1季度</option>
+                <option id="2季度">2季度</option>
+                <option id="3季度">3季度</option>
+                <option id="4季度">4季度</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="input-group">
+            <span class="input-group-addon">
+                程序类型
+            </span>
+
+            <select class="form-control" id="inputType">
+                <option id="0">核心程序分支覆盖率</option>
+                <option id="1">变更程序分支覆盖率</option>
+            </select>
+
+        </div>
+    </div>
+
+    <input type="button" value="查询" id="search" class="btn btn-info">
+    <input type="button" value="添加" id="add" class="btn btn-info">
+    <input type="button" value="修改" id="edit" class="btn btn-info">
+    <input type="button" value="删除" id="delete" class="btn btn-info">
+    <br>
+    <br>
+    <table class="table table-striped table-bordered table-hover table-responsive" id="dataTable" style="height:300px;">
+    </table>
+
+    <br>
+    <br>
+    <table  style="width:100%">
+        <tr>
+            <td style="width:30%"><div id="echarts1" style="width: 100%;height:400px;margin: 0 auto"></div></td>
+            <td style="width:30%"><div id="echarts2" style="width: 100%;height:400px;margin: 0 auto"></div></td>
+            <td style="width:30%"><div id="echarts3" style="width: 100%;height:400px;margin: 0 auto"></div></td>
+        </tr>
+    </table>
+</body>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load staticfiles %}
+    <script src="{% static 'js/jquery/jquery-1.12.4.min.js' %}" ></script>
+
+    <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap-table.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap-datetimepicker.css' %}" rel="stylesheet">
+
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap-table.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap-table-zh-CN.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap-datetimepicker.js' %}" ></script>
+
+
+    <script src="{% static 'js/echarts/echarts.min.js' %}" ></script>
+<script>
+
+    option = {
+        title : {
+            text: '各组程序覆盖率和分支覆盖率'
+        },
+        tooltip : {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['程序覆盖率','分支覆盖率'],
+            y:'bottom'
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+        xAxis : [
+            {
+                type : 'category',
+                data : ['1组','2组','3组','4组','5组','6组','7组','8组','9组','10组']
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                name:'程序覆盖率',
+                type:'bar',
+                data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                },
+                markLine : {
+                    symbol: 'none',
+                    itemStyle: {
+                        normal: {
+                            label:
+                                {
+                                    show: true,
+                                    //position: 'right',
+                                     formatter: '目标值60%',
+                                }
+                        }
+                    },
+                    data : [
+                        {name: '目标值',
+                        //silent:true,             //鼠标悬停事件  true没有，false有
+                        <!--xAxis: 0, yAxis: 60,-->
+                        yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                        }
+                    ]
+                }
+            },
+            {
+                name:'分支覆盖率',
+                type:'bar',
+                data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+                markPoint : {
+                    data : [
+                        {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183},
+                        {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
+                    ]
+                },
+                markLine : {
+                    symbol: 'none',
+                    itemStyle: {
+                        normal: {
+                            label:
+                                {
+                                    show: true,
+                                    //  position: 'center',
+                                     formatter: '目标值50%',
+                                }
+                        }
+                    },
+                    data : [
+                        {
+                            yAxis: 50
+                        }
+                    ]
+                }
+            }
+        ]
+    };
+
+    function drawEcharts(id){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(id));
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+
+    $("#search").on("click", function () {
+        initTable ();
+        //$('#dataTable').bootstrapTable(('refresh')); // 很重要的一步，刷新url！
+        drawEcharts("echarts1");
+        drawEcharts("echarts2");
+        drawEcharts("echarts3");
+    })
+
+    $.ajaxSetup({
+        data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+    })
+    var $table;
+    var rows=1;
+    //初始化bootstrap-table的内容
+    function initTable () {
+        var itemCode=[], //所选择因子的code
+            itemName=[];  // 所选择因子的text
+        var columns = [],
+        initColumns = [],//公共固定列
+        itemColumns = []; //动态因子列
+        initColumns = [
+            {
+                title: '序号',
+                field: 'index',
+                align: 'center',
+                valign: 'middle',
+                rowspan: 2
+            },{
+                checkbox: true,
+                rowspan: 2,
+                valign: 'middle'
+            }, {
+                field: 'username',
+                title: '开发组',
+                rowspan: 2,
+                sortable: true,
+                valign: 'middle'
+            }
+        ];
+        itemName[0]="10月版";
+        itemName[1]="11月版";
+        itemName[2]="12月版";
+        //根据选择因子绘制动态表头
+        for (var i = 0; i < itemName.length; i++) {
+            initColumns.push (
+                {
+                    field: "",
+                    title: itemName[i] ,
+                    width: 80,
+                    align: "right",
+                    halign: "center",
+                    colspan: 6
+                }
+            );
+
+            itemColumns.push(
+                {
+                    field: 'COVEREDPROG' + i,
+                    title: '已覆盖程序数',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                },
+                {
+                    field: 'ALLPROG' + i,
+                    title: '程序总数',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                },{
+                    field: 'COVERATEPROG' + i,
+                    title: '程序覆盖率',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                },{
+                    field: 'COVERDBRANCH' + i,
+                    title: '已覆盖分支数',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                },{
+                    field: 'ALLBRANCH' + i,
+                    title: '变更分支总数',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                },{
+                    field: 'COVERATEBRANCH' + i,
+                    title: '分支覆盖率',
+                    width: 80,
+                    align: 'center',
+                    halign: 'center'
+                }
+            );
+        }
+        columns.push(initColumns, itemColumns); //合并表格内容
+
+
+        //记录页面bootstrap-table全局变量$table，方便应用
+        var queryUrl = '/coverageSearch/'
+        $('#dataTable').bootstrapTable('destroy');
+        $table = $('#dataTable').bootstrapTable({
+            url: queryUrl,                      //请求后台的URL（*）
+            method: 'GET',                      //请求方式（*）
+            //toolbar: '#toolbar',              //工具按钮用哪个容器
+            editable:true,
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: false,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: rows,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 1,                     //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            //strictSearch: true,
+            showColumns: true,                  //是否显示所有的列（选择显示的列）
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+            showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+            //cardView: false,                    //是否显示详细视图
+            //detailView: false,                  //是否显示父子表
+            //classes: "table table-bordered table-striped table-sm table-dark",
+            //得到查询的参数
+            queryParams : function (params) {
+                //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                var temp = {
+                    rows: params.limit,                         //页面大小
+                    page: (params.offset / params.limit) + 1,   //页码
+                    sort: params.sort,      //排序列名
+                    sortOrder: params.order, //排位命令（desc，asc）
+                    inputYear: $('#inputYear').val(), // 请求时向服务端传递的参数
+                };
+                return temp;
+            },
+            columns: columns, //动态拼接生成表格
+            onLoadSuccess: function (data) {
+
+            },
+            onLoadError: function () {
+                <!--showTips("数据加载失败！");-->
+            },
+            onDblClickRow: function (row, $element) {
+                var id = row.ID;
+                //EditViewById(id, 'view');
+            },
+        });
+    };
+
+
+</script>
+</html>
+
