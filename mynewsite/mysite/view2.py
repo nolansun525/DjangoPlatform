@@ -1,39 +1,49 @@
 # _*_ coding: utf-8 _*_
-import cx_Oracle
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
-import random, json
-from mysite.models import Product
-import pymysql   # 数据库驱动
-from django.views.decorators import csrf
-from datetime import date, datetime
-
-# 数据库连接
-connection = cx_Oracle.connect('BJ4USER/BJ4USER@localhost:1521/orcl')
-
-# 创建数据库连接“执行”对象
-cur = connection.cursor()
+from django.http import HttpResponse
+import  json
+from mynewsite.common.CommORCL import CommORCL
 
 
-def delete2(request):
-    id = request.POST.get('id')
-    print("~~~~~~~~~~~~~~~~~~~~~~"+id+"=============")
+def coverage(request):
+    context = {}  # 封装返回参数
+    return render(request, 'coverage.html', context)
 
-    sql = "delete from auth_user where id='"+id+"'";
+
+def coverageSearch(request):
+    inputYear = request.GET.get('inputYear')
+    # pageSize = request.GET.get('rows')
+    # pageNumber = request.GET.get('page')
+    # sortName = request.GET.get('sort')
+    # sortOrder = request.GET.get('sortOrder')
+    # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    # print("inputYear:" + inputYear)
+
+    # searchText = request.GET.get('searchText')
+    # sortName = request.GET.get('sortName')
+    # sortOrder = request.GET.get('sortOrder')
+    # print(num1)
+    strWhere = ""  # 查询条件
+    strPage = ""  # 分页和排序
+    if (inputYear != None and inputYear != ''):
+        strWhere = " where username ='" + inputYear + "'"
+
+    # if (sortName != None):
+    #     strPage = " order by " + sortName + " " + sortOrder
+    # startNumber = (int(pageSize) * int(pageNumber) - 1)  # 每页数量*页码 减1
+    # print("startNumber:" + str(startNumber))
+    # endNumber = int(pageNumber) * int(pageSize)
+    # strPage += " limit " + str(startNumber) + "," + str(endNumber)
+
+
+    commORCL = CommORCL('localhost')
+    sql = "select * from MYSITE_PMOS_COVERATE_AUTOTEST  "
     # 执行sql语句
+    results = commORCL.query_List(sql)
+    print(results)
+    commORCL.disconnect()
 
-    try:
-        # 执行sql语句
-        cur.execute(sql)
-        print("success")
-        # 提交到数据库执行
-        connection.commit()
-    except:
-        print("error")
-        # 如果发生错误则回滚
-        connection.rollback()
 
-        # article = Article.objects.get(id=article_id)
-    # article.delete()
-    return_dict = {"ret": True, "errMsg": "", "rows": [], "total": 0}
-    return HttpResponse(json.dumps(return_dict))
+    data = {"total": results.__len__(), "rows": results}
+    return HttpResponse(json.dumps(data, sort_keys=True), content_type="application/json")
+

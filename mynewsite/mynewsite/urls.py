@@ -26,9 +26,10 @@ urlpatterns = [
     path('list/', listing),
     path('list/<str:sku>/', disp_detail),
     path('', index),
-    url(r'^ajax_add/', views.ajax_add),
-    url(r'^findresult/', views.findresult),
-    # path('delete/', views.delete),
-    path('delete2/', view2.delete2),
+    path('ajax_add/', views.ajax_add),
+    path('findresult/', views.findresult),
+    path('coverage/', view2.coverage, name='coverage'),
+    path('coverageSearch/', view2.coverageSearch, name='coverageSearch'),
+
 ]
 
