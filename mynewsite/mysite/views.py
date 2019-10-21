@@ -8,7 +8,7 @@ import pymysql  # 数据库驱动
 from django.views.decorators import csrf
 from datetime import date, datetime
 
-commORCL = CommORCL('localhost')
+
 
 
 def index(request):
@@ -16,7 +16,9 @@ def index(request):
     sql = "select * from auth_user"
     # 执行sql语句
     # 获取所有记录列表
-    results = commORCL.query_Dict(sql)
+    commORCL = CommORCL('localhost')
+    results = commORCL.query_List(sql)
+    commORCL.disconnect()
     context['items'] = results  # 存入集合
     quotes = ['今日事，今日毕',
               '要怎么收获，先那么栽',
@@ -62,11 +64,12 @@ def findresult(request):
     # print(num1)
     sql = "select id,username,password,email,to_char(date_joined,'YYYY-mm-dd HH24:MI:SS') BirthDate from auth_user where username ='admin' "
     # 执行sql语句
-    #results = commORCL.query_Dict(sql)
+    commORCL = CommORCL('localhost')
+    results = commORCL.query_List(sql)
     commORCL.disconnect()
     # 获取所有记录列表
     # reCount = cur.execute('insert into UserInfo(Name,Address) values(%s,%s)', ('alex', 'usa'))
-    results = [{'id': 1, 'username': 'admin', 'password': 'pbkdf2_sha256$150000$CR59ZqpHz2fO$9vPYn49tWiNwGOtbflHV7vE1K7TCbgLPS+Ok4rbJKvc=', 'email': '', 'BirthDate': '2019-10-11 08:October:47'}]
+    #results = [{'id': 1, 'username': 'admin', 'password': 'pbkdf2_sha256$150000$CR59ZqpHz2fO$9vPYn49tWiNwGOtbflHV7vE1K7TCbgLPS+Ok4rbJKvc=', 'email': '', 'BirthDate': '2019-10-11 08:October:47'}]
     # rows = []
     print(results)
     print("test666666----------------------------------")

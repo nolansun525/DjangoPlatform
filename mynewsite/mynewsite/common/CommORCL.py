@@ -19,6 +19,10 @@ class CommORCL:
 
         return re
 
+    def runSql(self, SQL):
+        self.cur.execute(SQL)
+        self.connection.commit()
+
     def disconnect(self):
         self.cur.close()
         self.connection.close()
