@@ -8,7 +8,7 @@
 
     <br>
     <br>
-    <div class="col-lg-2">
+    <div class="col-md-2 col-sm-3">
         <div class="input-group">
             <span class="input-group-addon">
                 年份
@@ -19,7 +19,7 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-2 col-xm-2">
+    <div class="col-md-2 col-sm-3">
         <div class="input-group">
             <span class="input-group-addon">
                 季度
@@ -32,15 +32,14 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-md-3 col-sm-6">
         <div class="input-group">
             <span class="input-group-addon">
                 程序类型
             </span>
-
             <select class="form-control" id="inputType">
-                <option id="0">核心程序分支覆盖率</option>
-                <option id="1">变更程序分支覆盖率</option>
+                <option id="0" value="0">核心程序分支覆盖率</option>
+                <option id="1" value="1">变更程序分支覆盖率</option>
             </select>
 
         </div>
@@ -83,11 +82,14 @@
 
 
     <script src="{% static 'js/echarts/echarts.min.js' %}" ></script>
+
 <script>
 
-    option = {
+
+    function initOption(echarsName,data1,data2){
+        option = {
         title : {
-            text: '各组程序覆盖率和分支覆盖率'
+            text: echarsName+'各组程序覆盖率和分支覆盖率'
         },
         tooltip : {
             trigger: 'axis'
@@ -109,7 +111,7 @@
         xAxis : [
             {
                 type : 'category',
-                data : ['1组','2组','3组','4组','5组','6组','7组','8组','9组','10组']
+                data : ['1组','2组','3组','4组','5组','6组','7组','8组','10组','京北方组']
             }
         ],
         yAxis : [
@@ -121,13 +123,7 @@
             {
                 name:'程序覆盖率',
                 type:'bar',
-                data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
-                markPoint : {
-                    data : [
-                        {type : 'max', name: '最大值'},
-                        {type : 'min', name: '最小值'}
-                    ]
-                },
+                data:data1,
                 markLine : {
                     symbol: 'none',
                     itemStyle: {
@@ -135,16 +131,13 @@
                             label:
                                 {
                                     show: true,
-                                    //position: 'right',
-                                     formatter: '目标值60%',
+                                    formatter: '目标60%',
                                 }
                         }
                     },
                     data : [
-                        {name: '目标值',
-                        //silent:true,             //鼠标悬停事件  true没有，false有
-                        <!--xAxis: 0, yAxis: 60,-->
-                        yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                        {
+                            yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
                         }
                     ]
                 }
@@ -152,23 +145,15 @@
             {
                 name:'分支覆盖率',
                 type:'bar',
-                data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-                markPoint : {
-                    data : [
-                        {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183},
-                        {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
-                    ]
-                },
+                data:data2,
                 markLine : {
                     symbol: 'none',
                     itemStyle: {
                         normal: {
-                            label:
-                                {
-                                    show: true,
-                                    //  position: 'center',
-                                     formatter: '目标值50%',
-                                }
+                            label:{
+                                show: true,
+                                formatter: '目标50%',
+                            }
                         }
                     },
                     data : [
@@ -180,8 +165,10 @@
             }
         ]
     };
+    }
 
-    function drawEcharts(id){
+
+    function drawEcharts(id,echarsName){
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById(id));
         // 使用刚指定的配置项和数据显示图表。
@@ -192,9 +179,24 @@
     $("#search").on("click", function () {
         initTable ();
         //$('#dataTable').bootstrapTable(('refresh')); // 很重要的一步，刷新url！
-        drawEcharts("echarts1");
-        drawEcharts("echarts2");
-        drawEcharts("echarts3");
+
+        drawEcharts("echarts1",initOption("10月版",COVERATEPROGData0,COVERATEBRANCHData0));
+        drawEcharts("echarts2",initOption("11月版",COVERATEPROGData1,COVERATEBRANCHData1));
+        drawEcharts("echarts3",initOption("12月版",[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]));
+
+        <!--$.ajax({-->
+            <!--url:"/echarsSearch/",-->
+            <!--type:"POST",-->
+            <!--dataType:'json',-->
+            <!--data:{-->
+                <!--season: $('#inputYear').val()+$('#inputQuarter').val(), // 请求时向服务端传递的参数-->
+                <!--progtype: $('#inputType').val(), // 请求时向服务端传递的参数-->
+            <!--},-->
+            <!--success:function (data) {-->
+                <!--console.log(data);-->
+          <!--}-->
+        <!--})-->
+
     })
 
     $.ajaxSetup({
@@ -204,6 +206,7 @@
     var rows=1;
     //初始化bootstrap-table的内容
     function initTable () {
+
         var itemCode=[], //所选择因子的code
             itemName=[];  // 所选择因子的text
         var columns = [],
@@ -211,20 +214,11 @@
         itemColumns = []; //动态因子列
         initColumns = [
             {
-                title: '序号',
-                field: 'index',
-                align: 'center',
-                valign: 'middle',
-                rowspan: 2
-            },{
-                checkbox: true,
-                rowspan: 2,
-                valign: 'middle'
-            }, {
-                field: 'username',
+                field: 'TEAM',
                 title: '开发组',
                 rowspan: 2,
                 sortable: true,
+                <!--fixedColumns: true,-->
                 valign: 'middle'
             }
         ];
@@ -287,36 +281,26 @@
         }
         columns.push(initColumns, itemColumns); //合并表格内容
 
-
         //记录页面bootstrap-table全局变量$table，方便应用
-        var queryUrl = '/coverageSearch/'
+        var queryUrl = '/coverageSearch/';
         $('#dataTable').bootstrapTable('destroy');
         $table = $('#dataTable').bootstrapTable({
             url: queryUrl,                      //请求后台的URL（*）
             method: 'GET',                      //请求方式（*）
             //toolbar: '#toolbar',              //工具按钮用哪个容器
-            editable:true,
+            fixedColumns: true,
             striped: true,                      //是否显示行间隔色
             cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-            pagination: false,                   //是否显示分页（*）
-            sortable: true,                     //是否启用排序
-            sortOrder: "asc",                   //排序方式
-            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: rows,                      //初始化加载第一页，默认第一页,并记录
-            pageSize: 1,                     //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             search: false,                      //是否显示表格搜索
             //strictSearch: true,
             showColumns: true,                  //是否显示所有的列（选择显示的列）
             showRefresh: true,                  //是否显示刷新按钮
-            minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: true,                //是否启用点击选中行
             //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
             showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
             //cardView: false,                    //是否显示详细视图
             //detailView: false,                  //是否显示父子表
-            //classes: "table table-bordered table-striped table-sm table-dark",
             //得到查询的参数
             queryParams : function (params) {
                 //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
@@ -325,24 +309,34 @@
                     page: (params.offset / params.limit) + 1,   //页码
                     sort: params.sort,      //排序列名
                     sortOrder: params.order, //排位命令（desc，asc）
-                    inputYear: $('#inputYear').val(), // 请求时向服务端传递的参数
+                    season: $('#inputYear').val()+$('#inputQuarter').val(), // 请求时向服务端传递的参数
+                    progtype: $('#inputType').val(), // 请求时向服务端传递的参数
                 };
                 return temp;
             },
             columns: columns, //动态拼接生成表格
             onLoadSuccess: function (data) {
-
+                for(var i=0;i<data.length;i++){
+                        COVERATEPROGData0.push(data[i].COVERATEPROG0);    //挨个取出类别并填入类别数组
+                        COVERATEBRANCHData0.push(data[i].COVERATEBRANCH0);
+                        COVERATEPROGData1.push(data[i].COVERATEPROG1);
+                        COVERATEBRANCHData1.push(data[i].COVERATEBRANCH1);
+                        COVERATEPROGData2.push(data[i].COVERATEPROG2);
+                        COVERATEBRANCHData2.push(data[i].COVERATEBRANCH2);
+                }
             },
             onLoadError: function () {
                 <!--showTips("数据加载失败！");-->
             },
-            onDblClickRow: function (row, $element) {
-                var id = row.ID;
-                //EditViewById(id, 'view');
-            },
+
         });
     };
-
+var COVERATEPROGData0;
+var COVERATEBRANCHData0;
+var COVERATEPROGData1;
+var COVERATEBRANCHData1;
+var COVERATEPROGData2;
+var COVERATEBRANCHData2;
 
 </script>
 </html>

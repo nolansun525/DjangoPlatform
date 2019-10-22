@@ -30,6 +30,7 @@ urlpatterns = [
     path('findresult/', views.findresult),
     path('coverage/', view2.coverage, name='coverage'),
     path('coverageSearch/', view2.coverageSearch, name='coverageSearch'),
+    path('echarsSearch/', view2.echarsSearch, name='echarsSearch'),
 
 ]
 
