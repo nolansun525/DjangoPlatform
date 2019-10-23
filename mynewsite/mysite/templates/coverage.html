@@ -86,7 +86,7 @@
     function initOption(echarsName,data1,data2){
         option = {
             title : {
-                text: echarsName+'各组程序覆盖率和分支覆盖率'
+                text: echarsName+'程序覆盖率和分支覆盖率'
             },
             tooltip : {
                 trigger: 'axis',
@@ -111,6 +111,12 @@
             xAxis : [
                 {
                     type : 'category',
+                    interval: 0,
+                    axisLabel:{
+                        formatter:function(value){
+                            return value.split("").join("\n");
+                        }
+                    },
                     data : ['1组','2组','3组','4组','5组','6组','7组','8组','10组','京北方组']
                 }
             ],
@@ -119,7 +125,8 @@
                     type : 'value',
                     axisLabel:{
                         formatter:'{value}%'
-                    }
+                    },
+                    max :100,
                 }
             ],
             series : [
@@ -129,18 +136,13 @@
                     data:data1,
                     markLine : {
                         symbol: 'none',
-                        itemStyle: {
-                            normal: {
-                                label:
-                                    {
-                                        show: true,
-                                        formatter: '目标60',
-                                    }
-                            }
+                        label:{
+                            position:"middle"   ,       //将警示值放在哪个位置，三个值“start”,"middle","end"  开始  中点 结束
+                            formatter: '目标100%'
                         },
                         data : [
                             {
-                                yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                                yAxis: 100           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
                             }
                         ]
                     }
@@ -151,13 +153,9 @@
                     data:data2,
                     markLine : {
                         symbol: 'none',
-                        itemStyle: {
-                            normal: {
-                                label:{
-                                    show: true,
-                                    formatter: '目标50',
-                                }
-                            }
+                        label:{
+                            position:"middle"   ,       //将警示值放在哪个位置，三个值“start”,"middle","end"  开始  中点 结束
+                            formatter: '目标50%'
                         },
                         data : [
                             {
