@@ -25,10 +25,10 @@ urlpatterns = [
     path('about/', about),
     path('list/', listing),
     path('list/<str:sku>/', disp_detail),
-    path('', index),
+    # path('', index),
     path('ajax_add/', views.ajax_add),
     path('findresult/', views.findresult),
-    path('coverage/', view2.coverage, name='coverage'),
+    path('', view2.coverage),
     path('coverageSearch/', view2.coverageSearch, name='coverageSearch'),
 
 ]

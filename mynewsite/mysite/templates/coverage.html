@@ -46,9 +46,6 @@
     </div>
 
     <input type="button" value="查询" id="search" class="btn btn-info">
-    <input type="button" value="添加" id="add" class="btn btn-info">
-    <input type="button" value="修改" id="edit" class="btn btn-info">
-    <input type="button" value="删除" id="delete" class="btn btn-info">
     <br>
     <br>
     <table class="table table-striped table-bordered table-hover table-responsive" id="dataTable" style="height:300px;">
@@ -92,7 +89,10 @@
             text: echarsName+'各组程序覆盖率和分支覆盖率'
         },
         tooltip : {
-            trigger: 'axis'
+            trigger: 'axis',
+            formatter:function(params){
+                return params[0].name+"<br>"+params[0].seriesName+":"+params[0].data+"%"+"<br>"+params[1].seriesName+":"+params[1].data+"%";
+            },
         },
         legend: {
             data:['程序覆盖率','分支覆盖率'],
@@ -116,7 +116,10 @@
         ],
         yAxis : [
             {
-                type : 'value'
+                type : 'value',
+                axisLabel:{
+                    formatter:'{value}%'
+                }
             }
         ],
         series : [
@@ -131,7 +134,7 @@
                             label:
                                 {
                                     show: true,
-                                    formatter: '目标60%',
+                                    formatter: '目标60',
                                 }
                         }
                     },
@@ -152,7 +155,7 @@
                         normal: {
                             label:{
                                 show: true,
-                                formatter: '目标50%',
+                                formatter: '目标50',
                             }
                         }
                     },
@@ -165,47 +168,69 @@
             }
         ]
     };
+    return option;
     }
 
 
-    function drawEcharts(id,echarsName){
+    function drawEcharts(id,echarsName,data1,data2){
+        var option = initOption(echarsName,data1,data2);
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById(id));
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     }
 
-
     $("#search").on("click", function () {
-        initTable ();
         //$('#dataTable').bootstrapTable(('refresh')); // 很重要的一步，刷新url！
+        $.ajax({
+            url:"/coverageSearch/",
+            type:"POST",
+            //dataType:'json',
+            data:{
+                season : $('#inputYear').val()+$('#inputQuarter').val(), // 请求时向服务端传递的参数
+                progtype: $('#inputType').val(), // 请求时向服务端传递的参数
+            },
+            success:function (data) {
+                if(data == null || data.length == 1){
+                    alert("查询结果为空");
+                    return;
+                }
 
-        drawEcharts("echarts1",initOption("10月版",COVERATEPROGData0,COVERATEBRANCHData0));
-        drawEcharts("echarts2",initOption("11月版",COVERATEPROGData1,COVERATEBRANCHData1));
-        drawEcharts("echarts3",initOption("12月版",[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]));
+                var tData = new Array();
 
-        <!--$.ajax({-->
-            <!--url:"/echarsSearch/",-->
-            <!--type:"POST",-->
-            <!--dataType:'json',-->
-            <!--data:{-->
-                <!--season: $('#inputYear').val()+$('#inputQuarter').val(), // 请求时向服务端传递的参数-->
-                <!--progtype: $('#inputType').val(), // 请求时向服务端传递的参数-->
-            <!--},-->
-            <!--success:function (data) {-->
-                <!--console.log(data);-->
-          <!--}-->
-        <!--})-->
+                var COVERATEPROGData0=new Array();
+                var COVERATEBRANCHData0=new Array();
+                var COVERATEPROGData1=new Array();
+                var COVERATEBRANCHData1=new Array();
+                var COVERATEPROGData2=new Array();
+                var COVERATEBRANCHData2=new Array();
 
+                for(var i=0;i<data.length-1;i++){
+                    tData[i]=data[i];
+                    COVERATEPROGData0[i]=parseFloat(data[i].COVERATEPROG0);    //挨个取出类别并填入类别数组
+                    COVERATEBRANCHData0[i]=parseFloat(data[i].COVERATEBRANCH0);
+                    COVERATEPROGData1[i]=parseFloat(data[i].COVERATEPROG1);
+                    COVERATEBRANCHData1[i]=parseFloat(data[i].COVERATEBRANCH1);
+                    COVERATEPROGData2[i]=parseFloat(data[i].COVERATEPROG2);
+                    COVERATEBRANCHData2[i]=parseFloat(data[i].COVERATEBRANCH2);
+                }
+                initTable(tData);
+                drawEcharts("echarts1","10月版",COVERATEPROGData0,COVERATEBRANCHData0);
+                drawEcharts('echarts2','11月版',COVERATEPROGData1,COVERATEBRANCHData1);
+                drawEcharts("echarts3","12月版",COVERATEPROGData2,COVERATEBRANCHData2);
+            },
+            error:function (data) {
+            console.log(data)
+            }
+        })
     })
-
     $.ajaxSetup({
-        data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+          data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
     })
     var $table;
     var rows=1;
     //初始化bootstrap-table的内容
-    function initTable () {
+    function initTable (tableData) {
 
         var itemCode=[], //所选择因子的code
             itemName=[];  // 所选择因子的text
@@ -218,7 +243,6 @@
                 title: '开发组',
                 rowspan: 2,
                 sortable: true,
-                <!--fixedColumns: true,-->
                 valign: 'middle'
             }
         ];
@@ -237,7 +261,6 @@
                     colspan: 6
                 }
             );
-
             itemColumns.push(
                 {
                     field: 'COVEREDPROG' + i,
@@ -282,11 +305,11 @@
         columns.push(initColumns, itemColumns); //合并表格内容
 
         //记录页面bootstrap-table全局变量$table，方便应用
-        var queryUrl = '/coverageSearch/';
         $('#dataTable').bootstrapTable('destroy');
         $table = $('#dataTable').bootstrapTable({
-            url: queryUrl,                      //请求后台的URL（*）
-            method: 'GET',                      //请求方式（*）
+            //url: '/coverageSearch/',                      //请求后台的URL（*）
+            //method: 'GET',                      //请求方式（*）
+            data:tableData,
             //toolbar: '#toolbar',              //工具按钮用哪个容器
             fixedColumns: true,
             striped: true,                      //是否显示行间隔色
@@ -301,6 +324,7 @@
             showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
             //cardView: false,                    //是否显示详细视图
             //detailView: false,                  //是否显示父子表
+
             //得到查询的参数
             queryParams : function (params) {
                 //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
@@ -316,27 +340,14 @@
             },
             columns: columns, //动态拼接生成表格
             onLoadSuccess: function (data) {
-                for(var i=0;i<data.length;i++){
-                        COVERATEPROGData0.push(data[i].COVERATEPROG0);    //挨个取出类别并填入类别数组
-                        COVERATEBRANCHData0.push(data[i].COVERATEBRANCH0);
-                        COVERATEPROGData1.push(data[i].COVERATEPROG1);
-                        COVERATEBRANCHData1.push(data[i].COVERATEBRANCH1);
-                        COVERATEPROGData2.push(data[i].COVERATEPROG2);
-                        COVERATEBRANCHData2.push(data[i].COVERATEBRANCH2);
-                }
+
             },
             onLoadError: function () {
                 <!--showTips("数据加载失败！");-->
             },
-
         });
     };
-var COVERATEPROGData0;
-var COVERATEBRANCHData0;
-var COVERATEPROGData1;
-var COVERATEBRANCHData1;
-var COVERATEPROGData2;
-var COVERATEBRANCHData2;
+
 
 </script>
 </html>

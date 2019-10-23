@@ -12,9 +12,8 @@ def coverage(request):
 
 
 def coverageSearch(request):
-    season = request.GET.get('season')
-    flag = request.GET.get('progtype')
-
+    season = request.POST.get('season')
+    flag = request.POST.get('progtype')
     orcl = CommORCL()
     getDateSQL = "select distinct update_date from MYSITE_PMOS_COVERATE_AUTOTEST order by update_date desc"
     updateList = orcl.query_List(getDateSQL)
@@ -46,8 +45,8 @@ def coverageSearch(request):
     From = From[0:len(From)-1]
 
     selsql = sel+From+where+orderby
+    print(selsql)
     result=orcl.query_List(selsql)
-    #print(result)
     for cell in result:
         for j in range(0,i):
             COVERATEPROG = cell['COVERATEPROG'+str(j)]
@@ -55,21 +54,21 @@ def coverageSearch(request):
             if COVERATEPROG[0]=='.':
                 cell['COVERATEPROG'+str(j)] = '0'+COVERATEPROG
             elif COVERATEPROG=='%':
-                cell['COVERATEPROG' + str(j)] = '-'
+                cell['COVERATEPROG' + str(j)] = ''
 
             COVERATEBRANCH = cell['COVERATEBRANCH'+str(j)]
 
             if COVERATEBRANCH[0] == '.':
                 cell['COVERATEBRANCH' + str(j)] = '0' + COVERATEBRANCH
             elif COVERATEBRANCH == '%':
-                cell['COVERATEBRANCH' + str(j)] = '-'
+                cell['COVERATEBRANCH' + str(j)] = ''
 
     readd = {'date':updateMD}
     result.append(readd);
     orcl.disconnect()
-
+    print(result.__len__())
     data = {"total": result.__len__(), "rows": result}
-    return HttpResponse(json.dumps(data, sort_keys=True), content_type="application/json")
+    return HttpResponse(json.dumps(result, sort_keys=True), content_type="application/json")
 
 def getVersionFromJDs(season):
     years = '20' + season[0:2]
