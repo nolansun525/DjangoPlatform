@@ -38,7 +38,7 @@ def coverageSearch(request):
         where = where + " and " +flags[i]+".UPDATE_DATE='"+UPDATE_DATE\
             + "' and "+flags[i]+".dept='北京开发四部'"\
             + " and "+flags[i]+".version='"+versions\
-            + "' and "+flags[i]+".flag='"+flag+"'"
+            + "' and "+flags[i]+".flag="+flag+""
         if i > 0:
             where = where + " and "+flags[i]+".TEAM = T.TEAM"
         i += 1

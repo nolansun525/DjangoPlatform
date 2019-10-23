@@ -53,7 +53,7 @@
 
     <br>
     <br>
-    <table  style="width:100%">
+    <table  style="width:100%" id="echartsId">
         <tr>
             <td style="width:30%"><div id="echarts1" style="width: 100%;height:400px;margin: 0 auto"></div></td>
             <td style="width:30%"><div id="echarts2" style="width: 100%;height:400px;margin: 0 auto"></div></td>
@@ -69,13 +69,13 @@
     <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap/css/bootstrap-table.css' %}" rel="stylesheet">
-    <link href="{% static 'bootstrap/css/bootstrap-datetimepicker.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap-table-fixed-columns.css' %}" rel="stylesheet">
 
     <script src="{% static 'bootstrap/js/bootstrap.js' %}" ></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
     <script src="{% static 'bootstrap/js/bootstrap-table.js' %}" ></script>
     <script src="{% static 'bootstrap/js/bootstrap-table-zh-CN.js' %}" ></script>
-    <script src="{% static 'bootstrap/js/bootstrap-datetimepicker.js' %}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap-table-fixed-columns.js' %}" ></script>
 
 
     <script src="{% static 'js/echarts/echarts.min.js' %}" ></script>
@@ -85,92 +85,114 @@
 
     function initOption(echarsName,data1,data2){
         option = {
-        title : {
-            text: echarsName+'各组程序覆盖率和分支覆盖率'
-        },
-        tooltip : {
-            trigger: 'axis',
-            formatter:function(params){
-                return params[0].name+"<br>"+params[0].seriesName+":"+params[0].data+"%"+"<br>"+params[1].seriesName+":"+params[1].data+"%";
+            title : {
+                text: echarsName+'各组程序覆盖率和分支覆盖率'
             },
-        },
-        legend: {
-            data:['程序覆盖率','分支覆盖率'],
-            y:'bottom'
-        },
-        toolbox: {
-            show : true,
-            feature : {
-                dataView : {show: true, readOnly: false},
-                magicType : {show: true, type: ['line', 'bar']},
-                restore : {show: true},
-                saveAsImage : {show: true}
-            }
-        },
-        calculable : true,
-        xAxis : [
-            {
-                type : 'category',
-                data : ['1组','2组','3组','4组','5组','6组','7组','8组','10组','京北方组']
-            }
-        ],
-        yAxis : [
-            {
-                type : 'value',
-                axisLabel:{
-                    formatter:'{value}%'
-                }
-            }
-        ],
-        series : [
-            {
-                name:'程序覆盖率',
-                type:'bar',
-                data:data1,
-                markLine : {
-                    symbol: 'none',
-                    itemStyle: {
-                        normal: {
-                            label:
-                                {
-                                    show: true,
-                                    formatter: '目标60',
-                                }
-                        }
-                    },
-                    data : [
-                        {
-                            yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
-                        }
-                    ]
+            tooltip : {
+                trigger: 'axis',
+                formatter:function(params){
+                    return params[0].name+"<br>"+params[0].seriesName+":"+params[0].data+"%"+"<br>"+params[1].seriesName+":"+params[1].data+"%";
+                },
+            },
+            legend: {
+                data:['程序覆盖率','分支覆盖率'],
+                y:'bottom'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
                 }
             },
-            {
-                name:'分支覆盖率',
-                type:'bar',
-                data:data2,
-                markLine : {
-                    symbol: 'none',
-                    itemStyle: {
-                        normal: {
-                            label:{
-                                show: true,
-                                formatter: '目标50',
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ['1组','2组','3组','4组','5组','6组','7组','8组','10组','京北方组']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    axisLabel:{
+                        formatter:'{value}%'
+                    }
+                }
+            ],
+            series : [
+                {
+                    name:'程序覆盖率',
+                    type:'bar',
+                    data:data1,
+                    markLine : {
+                        symbol: 'none',
+                        itemStyle: {
+                            normal: {
+                                label:
+                                    {
+                                        show: true,
+                                        formatter: '目标60',
+                                    }
                             }
-                        }
-                    },
-                    data : [
-                        {
-                            yAxis: 50
-                        }
-                    ]
+                        },
+                        data : [
+                            {
+                                yAxis: 60           // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                            }
+                        ]
+                    }
+                },
+                {
+                    name:'分支覆盖率',
+                    type:'bar',
+                    data:data2,
+                    markLine : {
+                        symbol: 'none',
+                        itemStyle: {
+                            normal: {
+                                label:{
+                                    show: true,
+                                    formatter: '目标50',
+                                }
+                            }
+                        },
+                        data : [
+                            {
+                                yAxis: 50
+                            }
+                        ]
+                    }
                 }
-            }
-        ]
-    };
-    return option;
+            ]
+        };
+        return option;
     }
-
+    var c1;
+    var c2;
+    var c3;
+    function querToColName(){
+        var quarter = $("#inputQuarter").val();
+        if(quarter == '1季度'){
+            c1='1月版';
+            c2='2月版';
+            c3='3月版';
+        }else if(quarter == '2季度'){
+            c1='4月版';
+            c2='5月版';
+            c3='6月版';
+        }else if(quarter == '3季度'){
+            c1='7月版';
+            c2='8月版';
+            c3='9月版';
+        }else if(quarter == '4季度'){
+            c1='10月版';
+            c2='11月版';
+            c3='12月版';
+        }
+    }
 
     function drawEcharts(id,echarsName,data1,data2){
         var option = initOption(echarsName,data1,data2);
@@ -191,8 +213,10 @@
                 progtype: $('#inputType').val(), // 请求时向服务端传递的参数
             },
             success:function (data) {
-                if(data == null || data.length == 1){
+                if(data == null || data.length == 0 || data.length == 1){
                     alert("查询结果为空");
+                    $('#dataTable').bootstrapTable('destroy');
+                    $("#echartsId").css("display","none");//隐藏div
                     return;
                 }
 
@@ -214,10 +238,14 @@
                     COVERATEPROGData2[i]=parseFloat(data[i].COVERATEPROG2);
                     COVERATEBRANCHData2[i]=parseFloat(data[i].COVERATEBRANCH2);
                 }
-                initTable(tData);
-                drawEcharts("echarts1","10月版",COVERATEPROGData0,COVERATEBRANCHData0);
-                drawEcharts('echarts2','11月版',COVERATEPROGData1,COVERATEBRANCHData1);
-                drawEcharts("echarts3","12月版",COVERATEPROGData2,COVERATEBRANCHData2);
+                var headDate = data[data.length-1].date;
+                querToColName();
+                initTable(tData,headDate);
+
+                drawEcharts("echarts1",c1,COVERATEPROGData0,COVERATEBRANCHData0);
+                drawEcharts('echarts2',c2,COVERATEPROGData1,COVERATEBRANCHData1);
+                drawEcharts("echarts3",c3,COVERATEPROGData2,COVERATEBRANCHData2);
+                $("#echartsId").css("display","block");//显示div
             },
             error:function (data) {
             console.log(data)
@@ -230,8 +258,7 @@
     var $table;
     var rows=1;
     //初始化bootstrap-table的内容
-    function initTable (tableData) {
-
+    function initTable (tableData,headDate) {
         var itemCode=[], //所选择因子的code
             itemName=[];  // 所选择因子的text
         var columns = [],
@@ -246,9 +273,9 @@
                 valign: 'middle'
             }
         ];
-        itemName[0]="10月版";
-        itemName[1]="11月版";
-        itemName[2]="12月版";
+        itemName[0]=c1+"("+headDate+")";
+        itemName[1]=c2+"("+headDate+")";
+        itemName[2]=c3+"("+headDate+")";
         //根据选择因子绘制动态表头
         for (var i = 0; i < itemName.length; i++) {
             initColumns.push (
@@ -306,7 +333,7 @@
 
         //记录页面bootstrap-table全局变量$table，方便应用
         $('#dataTable').bootstrapTable('destroy');
-        $table = $('#dataTable').bootstrapTable({
+        $table = $('#dataTable').bootstrapTable('destroy').bootstrapTable({
             //url: '/coverageSearch/',                      //请求后台的URL（*）
             //method: 'GET',                      //请求方式（*）
             data:tableData,
@@ -315,13 +342,15 @@
             striped: true,                      //是否显示行间隔色
             cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             search: false,                      //是否显示表格搜索
+            fixedColumns: true,
+            fixedNumber: 1,                     //固定列数
             //strictSearch: true,
-            showColumns: true,                  //是否显示所有的列（选择显示的列）
-            showRefresh: true,                  //是否显示刷新按钮
+            //showColumns: true,                  //是否显示所有的列（选择显示的列）
+            //showRefresh: true,                  //是否显示刷新按钮
             clickToSelect: true,                //是否启用点击选中行
             //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-            uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
-            showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+            //uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+            //showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
             //cardView: false,                    //是否显示详细视图
             //detailView: false,                  //是否显示父子表
 
