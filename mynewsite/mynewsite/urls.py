@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from mysite.views import about, listing, disp_detail, index
-from django.conf.urls import url
 from mysite import views, view2
 
 

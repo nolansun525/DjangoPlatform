@@ -4,9 +4,6 @@ from django.http import HttpResponse, Http404
 import random, json
 from mysite.models import Product
 from mynewsite.common.CommORCL import CommORCL
-import pymysql  # 数据库驱动
-from django.views.decorators import csrf
-from datetime import date, datetime
 
 
 
